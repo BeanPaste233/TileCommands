@@ -10,8 +10,8 @@ namespace TileCommands
     public static class Utils
     {
         //to do
-        public static Point GetPlayerFeetPoint(Point position) {
-            return Point.Zero;
+        public static Point GetPlayerFeetPoint(int tileX,int tileY) {
+            return new Point(tileX,tileY+4);
         }
     }
 }
