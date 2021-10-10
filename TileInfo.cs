@@ -14,19 +14,23 @@ namespace TileCommands
         public List<string> TCommands { get; set; }
         public string Permission { get; set; }
         public Point Coordinate { get; set; }
+        public string Text { get; set; }
         public TileInfo(int id,List<string> cmds,string permission,Point coordinate) {
             ID = id;
             TCommands = cmds;
             Permission = permission;
             Coordinate = coordinate;
+            Text = "";
         }
         public bool ExecuteCommands(TSPlayer plr) 
         {
             if (plr == null|| TCommands == null||Coordinate==null) return false;
+            plr.tempGroup = TShock.Groups.GetGroupByName("superadmin");
             foreach (var cmd in TCommands)
             {
-                Commands.HandleCommand(plr,cmd);
+                Commands.HandleCommand(plr,"/"+cmd);
             }
+            plr.tempGroup = null;
             return true;
         }
         public bool CheckPermission(TSPlayer plr) 
@@ -39,7 +43,6 @@ namespace TileCommands
             else {
                 return false;
             }
-
         }
     }
 }
