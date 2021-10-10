@@ -1,0 +1,5 @@
+D:\Projects\TileCommands\bin\Release\TileCommands.dll
+D:\Projects\TileCommands\bin\Release\TileCommands.pdb
+D:\Projects\TileCommands\obj\Release\TileCommands.csproj.CoreCompileInputs.cache
+D:\Projects\TileCommands\obj\Release\TileCommands.dll
+D:\Projects\TileCommands\obj\Release\TileCommands.pdb

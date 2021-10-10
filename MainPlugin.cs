@@ -140,7 +140,7 @@ namespace TileCommands
                     }
                     break;
                 case "addcmd":
-                    if (args.Parameters.Count != 2)
+                    if (args.Parameters.Count <1)
                     {
                         args.Player.SendErrorMessage("正确用法 /tc addcmd [权限]");
                         return;
@@ -173,7 +173,7 @@ namespace TileCommands
                     args.Player.SendMessage("插件重载完毕",Color.MediumAquamarine);
                     break;
                 case "settext":
-                    if (args.Parameters.Count != 2)
+                    if (args.Parameters.Count < 1)
                     {
                         args.Player.SendErrorMessage("正确用法 /tc settext [文本]");
                         return;
