@@ -39,10 +39,10 @@ namespace TileCommands
             var tile = ConfigUtils.config.Tiles.Find(t=>t.Coordinate.X==point.X&&t.Coordinate.Y==point.Y);
             if (tile!=null)
             {
-                int absInstance = Math.Abs(args.Player.TileX-tile.Coordinate.X);
-                if (absInstance<=4)
+                var distance = Vector2.Distance(new Vector2(tile.Coordinate.X*16,tile.Coordinate.Y*16),args.Player.TPlayer.position);
+                if (distance<=250)
                 {
-                    Utils.SendCombatMsg(tile.Text,Color.MediumAquamarine,new Vector2(tile.Coordinate.X*16,tile.Coordinate.Y*16));
+                    Utils.SendCombatMsg(tile.ToString(), Color.MediumAquamarine, args.Player.TPlayer.position) ;
                 }
                 if (tile.CheckPermission(args.Player))
                 {
@@ -172,7 +172,7 @@ namespace TileCommands
                     ConfigUtils.LoadConfig();
                     args.Player.SendMessage("插件重载完毕",Color.MediumAquamarine);
                     break;
-                case "settext":
+                case "addtext":
                     if (args.Parameters.Count < 1)
                     {
                         args.Player.SendErrorMessage("正确用法 /tc settext [文本]");
@@ -189,8 +189,8 @@ namespace TileCommands
                         args.Player.SendErrorMessage("该方块不是一个指令方块");
                         return;
                     }
-                    tile.Text = args.Parameters[1];
-                    args.Player.SendSuccessMessage("成功设置提示文本");
+                    tile.Text.Add(args.Parameters[1]);
+                    args.Player.SendSuccessMessage("成功添加提示文本");
                     args.Player.TempPoints[0] = Point.Zero;
                     ConfigUtils.UpdateConfig();
                     break;

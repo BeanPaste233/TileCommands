@@ -14,13 +14,13 @@ namespace TileCommands
         public List<string> TCommands { get; set; }
         public string Permission { get; set; }
         public Point Coordinate { get; set; }
-        public string Text { get; set; }
+        public List<string> Text { get; set; }
         public TileInfo(int id,List<string> cmds,string permission,Point coordinate) {
             ID = id;
             TCommands = cmds;
             Permission = permission;
             Coordinate = coordinate;
-            Text = "";
+            Text = new List<string>();
         }
         public bool ExecuteCommands(TSPlayer plr) 
         {
@@ -43,6 +43,15 @@ namespace TileCommands
             else {
                 return false;
             }
+        }
+        public override string ToString()
+        {
+            StringBuilder text = new StringBuilder();
+            foreach (var str in Text)
+            {
+                text.AppendLine(str);
+            }
+            return text.ToString();
         }
     }
 }
