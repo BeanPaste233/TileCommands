@@ -37,6 +37,8 @@ namespace TileCommands
         }
     }
     public class TConfig {
+        public bool DisableFloatText { get; set; }
+
         public List<TileInfo> Tiles = new List<TileInfo>();
     }
 }

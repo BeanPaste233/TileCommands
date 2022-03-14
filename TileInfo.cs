@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,10 +11,15 @@ namespace TileCommands
 {
     public class TileInfo
     {
+        [JsonProperty("方块ID")]
         public int ID { get; set; }
-        public List<string> TCommands { get; set; }
+        [JsonProperty("使用权限")]
         public string Permission { get; set; }
+        [JsonProperty("方块坐标")]
         public Point Coordinate { get; set; }
+        [JsonProperty("执行指令")]
+        public List<string> TCommands { get; set; }
+        [JsonProperty("显示文本")]
         public List<string> Text { get; set; }
         public TileInfo(int id,List<string> cmds,string permission,Point coordinate) {
             ID = id;

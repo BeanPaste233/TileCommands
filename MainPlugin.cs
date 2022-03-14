@@ -1,10 +1,8 @@
 ﻿using Microsoft.Xna.Framework;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 using System.Text;
-using System.Threading.Tasks;
 using Terraria;
 using TerrariaApi.Server;
 using TShockAPI;
@@ -14,9 +12,7 @@ namespace TileCommands
     [ApiVersion(2,1)]
     public class MainPlugin : TerrariaPlugin
     {
-        public MainPlugin(Main game) : base(game)
-        {
-        }
+        public MainPlugin(Main game) : base(game){ }
 
         public override string Name => "TileCommands";
 
@@ -74,11 +70,11 @@ namespace TileCommands
                     StringBuilder helpText = new StringBuilder();
                     helpText.AppendLine("/tc add 添加一个选择的点为指令方块");
                     helpText.AppendLine("/tc remove 删除所选中的点");
-                    helpText.AppendLine("/tc select 选中一个点");
+                    helpText.AppendLine("/tc sp 选中一个点");
                     helpText.AppendLine("/tc setperm [权限] 设置该点的权限");
                     helpText.AppendLine("/tc addcmd [指令] 给选中的点添加指令");
                     helpText.AppendLine("/tc cancel 取消选中");
-                    helpText.AppendLine("/tc settext [文本] 设置文本");
+                    helpText.AppendLine("/tc addtext [文本] 设置文本");
                     args.Player.SendMessage(helpText.ToString(),Color.MediumAquamarine);
                     break;
                 case "add":
@@ -111,7 +107,7 @@ namespace TileCommands
                     }
                     
                     break;
-                case "select":
+                case "sp":
                     args.Player.AwaitingTempPoint = 1;
                     args.Player.SendInfoMessage("请选取一个方块");
                     break;
