@@ -37,8 +37,11 @@ namespace TileCommands
         }
     }
     public class TConfig {
+        [JsonProperty("关闭方块漂浮字提示")]
         public bool DisableFloatText { get; set; }
-
+        [JsonProperty("开启聊天窗口提示")]
+        public bool EnableChatTips { get; set; }
+        [JsonProperty("指令方块列表")]
         public List<TileInfo> Tiles = new List<TileInfo>();
     }
 }

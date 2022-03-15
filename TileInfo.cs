@@ -17,16 +17,29 @@ namespace TileCommands
         public string Permission { get; set; }
         [JsonProperty("方块坐标")]
         public Point Coordinate { get; set; }
+        [JsonIgnore]
+        public bool Locked { get; set; }
         [JsonProperty("执行指令")]
         public List<string> TCommands { get; set; }
         [JsonProperty("显示文本")]
         public List<string> Text { get; set; }
+        [JsonProperty("冷却时间")]
+        public int Seconds { get; set; }
+        [JsonIgnore]
+        private int tick;
+        [JsonIgnore]
+        private int seconds;
         public TileInfo(int id,List<string> cmds,string permission,Point coordinate) {
             ID = id;
             TCommands = cmds;
             Permission = permission;
             Coordinate = coordinate;
             Text = new List<string>();
+            Locked = false;
+        }
+        public TileInfo() 
+        {
+            Locked = false;
         }
         public bool ExecuteCommands(TSPlayer plr) 
         {
@@ -42,13 +55,7 @@ namespace TileCommands
         public bool CheckPermission(TSPlayer plr) 
         {
             if (plr == null ) return false;
-            if (plr.HasPermission(Permission))
-            {
-                return true;
-            }
-            else {
-                return false;
-            }
+            return plr.HasPermission(Permission);
         }
         public override string ToString()
         {
@@ -58,6 +65,27 @@ namespace TileCommands
                 text.AppendLine(str);
             }
             return text.ToString();
+        }
+        public void Update(EventArgs args) 
+        {
+            if (tick!=60)
+            {
+                tick++;
+            }
+            else
+            {
+                seconds++;
+                tick = 0;
+            }
+            if (seconds>=Seconds)
+            {
+                Locked = false;
+                seconds = 0;
+            }
+            else
+            {
+                Locked = true;
+            }
         }
     }
 }

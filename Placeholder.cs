@@ -9,13 +9,15 @@ namespace TileCommands
 {
     public class Placeholder
     {
-        public string player = "{player}";
-        public string itemInHeld = "{helditem}";
+        internal string player = "{player}";
+        internal string itemInHeld = "{helditem}";
+        internal string group = "{group}";
         public Placeholder() { }
         public string Replace(string text,TSPlayer plr) 
         {
             text.Replace(player,plr.Name);
             text.Replace(itemInHeld,plr.TPlayer.HeldItem.netID.ToString());
+            text.Replace(group,plr.Group.Name);
             return text;
         }
     }

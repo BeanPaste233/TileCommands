@@ -25,28 +25,58 @@ namespace TileCommands
         public override void Initialize()
         {
             ServerApi.Hooks.GamePostInitialize.Register(this,OnPostInitialize);
+            ServerApi.Hooks.GameUpdate.Register(this,OnGameUpdate);
             GetDataHandlers.PlayerUpdate += OnPlayerUpdate;
+            
             
             ConfigUtils.LoadConfig();
         }
+
+        private void OnGameUpdate(EventArgs args)
+        {
+            foreach (var tile in ConfigUtils.config.Tiles)
+            {
+                tile.Update(args);
+            }
+        }
+
         private void OnPlayerUpdate(object sender,GetDataHandlers.PlayerUpdateEventArgs args) 
         {
-            var point = Utils.GetPlayerFeetPoint(args.Player.TileX,args.Player.TileY);
+            var plr = args.Player;
+            var point = Utils.GetPlayerFeetPoint(plr.TileX, plr.TileY);
             var tile = ConfigUtils.config.Tiles.Find(t=>t.Coordinate.X==point.X&&t.Coordinate.Y==point.Y);
             if (tile!=null)
             {
-                var distance = Vector2.Distance(new Vector2(tile.Coordinate.X*16,tile.Coordinate.Y*16),args.Player.TPlayer.position);
+                /*var distance = Vector2.Distance(new Vector2(tile.Coordinate.X*16,tile.Coordinate.Y*16),args.Player.TPlayer.position);
                 if (distance<=250)
                 {
                     Utils.SendCombatMsg(tile.ToString(), Color.MediumAquamarine, args.Player.TPlayer.position) ;
                 }
                 if (tile.CheckPermission(args.Player))
-                {
                     tile.ExecuteCommands(args.Player);
-                    
-                }else
+                else
+                    args.Player.SendErrorMessage("你没有使用此指令方块的权限");*/
+                if (!tile.Locked)
                 {
-                    args.Player.SendErrorMessage("你没有使用此指令方块的权限");
+                    var distance = Vector2.Distance(new Vector2(tile.Coordinate.X * 16, tile.Coordinate.Y * 16), plr.TPlayer.position);
+                    if (distance <= 250)
+                    {
+                        if (!ConfigUtils.config.DisableFloatText)//如果开启了漂浮字
+                        {
+                            Utils.SendCombatMsg(tile.ToString(), Color.MediumAquamarine, plr.TPlayer.position);
+                        }
+                        if (ConfigUtils.config.EnableChatTips)//如果开启了聊天栏提示
+                        {
+                            plr.SendInfoMessage(tile.ToString());
+                        }
+                    }
+                    if (tile.CheckPermission(args.Player))
+                        tile.ExecuteCommands(args.Player);
+                    else
+                        plr.SendErrorMessage("你没有使用此指令方块的权限");
+                }
+                else {
+                    plr.SendInfoMessage("指令方块在冷却中...");
                 }
             }
         
@@ -171,7 +201,7 @@ namespace TileCommands
                 case "addtext":
                     if (args.Parameters.Count < 1)
                     {
-                        args.Player.SendErrorMessage("正确用法 /tc settext [文本]");
+                        args.Player.SendErrorMessage("正确用法 /tc addtext [文本]");
                         return;
                     }
                     if (args.Player.TempPoints[0] == Point.Zero)
