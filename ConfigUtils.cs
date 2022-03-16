@@ -13,7 +13,7 @@ namespace TileCommands
     {
         public static readonly string configDir = TShock.SavePath + "/TileCommands";
         public static readonly string configPath = configDir + "/tilecommands.json";
-        public static TConfig config = new TConfig();
+        public static TConfig config = new TConfig() { DisableFloatText = false, EnableChatTips = true };
         public static void LoadConfig() 
         {
             if (Directory.Exists(configDir))

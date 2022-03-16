@@ -47,7 +47,9 @@ namespace TileCommands
             plr.tempGroup = TShock.Groups.GetGroupByName("superadmin");
             foreach (var cmd in TCommands)
             {
-                Commands.HandleCommand(plr,"/"+cmd);
+                var handledCmd = Utils.placeholder.Replace(cmd,plr);
+                if (!handledCmd.StartsWith("/")) handledCmd = "/" + handledCmd;
+                Commands.HandleCommand(plr,handledCmd);
             }
             plr.tempGroup = null;
             return true;
