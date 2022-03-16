@@ -233,14 +233,14 @@ namespace TileCommands
                     }
                     break;
                 case "settime":
-                    if (args.Parameters.Count != 3)
+                    if (args.Parameters.Count != 2)
                     {
-                        args.Player.SendInfoMessage("正确指令/tc settime [方块ID] [秒数]");
+                        args.Player.SendInfoMessage("正确指令/tc settime [秒数]");
                         return;
                     }
-                    if (int.TryParse(args.Parameters[1], out id)&&int.TryParse(args.Parameters[2],out value))
+                    if (int.TryParse(args.Parameters[1], out value))
                     {
-                        tile = ConfigUtils.config.Tiles.Find(t => t.ID == id);
+                        tile = ConfigUtils.config.Tiles.Find(t => t.ID == plr.GetData<int>("tilecommands"));
                         if (tile != null)
                         {
                             tile.Seconds = value;
