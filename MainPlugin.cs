@@ -21,7 +21,7 @@ namespace TileCommands
         public override string Author => "豆沙";
 
         public override string Description => "当玩家走到某个方块上时执行指令";
-
+        public static int i;
         public override void Initialize()
         {
             ServerApi.Hooks.GamePostInitialize.Register(this,OnPostInitialize);
@@ -58,8 +58,9 @@ namespace TileCommands
                     args.Player.SendErrorMessage("你没有使用此指令方块的权限");*/
                 if (!tile.Locked)
                 {
-                    var distance = Vector2.Distance(new Vector2(tile.Coordinate.X * 16, tile.Coordinate.Y * 16), plr.TPlayer.position);
-                    if (distance <= 250)
+                    //var distance = Vector2.Distance(new Vector2(tile.Coordinate.X * 16, tile.Coordinate.Y * 16), plr.TPlayer.position);
+                    var distance = Math.Sqrt(Math.Pow(Math.Abs(tile.Coordinate.X-plr.TileX),2.0)+ Math.Pow(Math.Abs(tile.Coordinate.Y - plr.TileY), 2.0));
+                    if (distance <= 3)
                     {
                         if (!ConfigUtils.config.DisableFloatText)//如果开启了漂浮字
                         {
@@ -94,17 +95,25 @@ namespace TileCommands
                 return;
             }
             TileInfo tile = null;
+            int value,id;
+            var plr = args.Player;
+            StringBuilder helpText = new StringBuilder();
             switch (args.Parameters[0])
             {
                 case "help":
-                    StringBuilder helpText = new StringBuilder();
                     helpText.AppendLine("/tc add 添加一个选择的点为指令方块");
                     helpText.AppendLine("/tc remove 删除所选中的点");
                     helpText.AppendLine("/tc sp 选中一个点");
+                    helpText.AppendLine("/tc sc [方块ID] 选中方块");
+                    helpText.AppendLine("/tc addtext [文本] 设置文本");
                     helpText.AppendLine("/tc setperm [权限] 设置该点的权限");
                     helpText.AppendLine("/tc addcmd [指令] 给选中的点添加指令");
                     helpText.AppendLine("/tc cancel 取消选中");
                     helpText.AppendLine("/tc addtext [文本] 设置文本");
+                    helpText.AppendLine("/tc settime [方块ID] [秒数] 设置冷却时间");
+                    helpText.AppendLine("/tc tp [方块ID] 传送到此方块");
+                    helpText.AppendLine("/tc list 查看方块列表");
+                    helpText.AppendLine("/tc reload 重载插件");
                     args.Player.SendMessage(helpText.ToString(),Color.MediumAquamarine);
                     break;
                 case "add":
@@ -116,52 +125,39 @@ namespace TileCommands
                     tile = new TileInfo(ConfigUtils.config.Tiles.Count+1,new List<string>(),"",args.Player.TempPoints[0]);
                     ConfigUtils.config.Tiles.Add(tile);
                     args.Player.TempPoints[0] = Point.Zero;
-                    args.Player.SendSuccessMessage($"成功添加方块 坐标:({tile.Coordinate.X},{tile.Coordinate.Y})");
+                    args.Player.SendSuccessMessage($"成功添加方块 坐标:({tile.Coordinate.X},{tile.Coordinate.Y}) 方块ID:{tile.ID}");
                     ConfigUtils.UpdateConfig();
                     break;
                 case "remove":
-                    if (args.Player.TempPoints[0] == Point.Zero)
+                    tile = ConfigUtils.config.Tiles.Find(t => t.ID == plr.GetData<int>("tilecommands"));
+                    if (tile == null)
                     {
-                        args.Player.SendErrorMessage("未选取点");
+                        args.Player.SendErrorMessage("指令方块不存在");
                         return;
                     }
-                    if (ConfigUtils.config.Tiles.Exists(t => t.Coordinate.X == args.Player.TempPoints[0].X && t.Coordinate.Y == args.Player.TempPoints[0].Y))
-                    {
-                        ConfigUtils.config.Tiles.RemoveAll(t => t.Coordinate.X == args.Player.TempPoints[0].X && t.Coordinate.Y == args.Player.TempPoints[0].Y);
-                        args.Player.SendSuccessMessage($"成功删除方块 坐标:({args.Player.TempPoints[0].X},{args.Player.TempPoints[0].Y})");
-                        args.Player.TempPoints[0] = Point.Zero;
-                        ConfigUtils.UpdateConfig();
-                    }
-                    else {
-                        args.Player.SendErrorMessage($"该方块不是指令方块");
-                    }
-                    
+                    ConfigUtils.config.Tiles.Remove(tile);
+                    args.Player.SendSuccessMessage($"成功删除方块 坐标:({tile.Coordinate.X},{tile.Coordinate.Y})");
+                    ConfigUtils.UpdateConfig();
                     break;
                 case "sp":
                     args.Player.AwaitingTempPoint = 1;
                     args.Player.SendInfoMessage("请选取一个方块");
                     break;
                 case "setperm":
-                    if (args.Player.TempPoints[0] == Point.Zero)
-                    {
-                        args.Player.SendErrorMessage("未选取点");
-                        return;
-                    }
                     if (args.Parameters.Count!=2)
                     {
                         args.Player.SendErrorMessage("正确用法 /tc setperm [权限]");
                         return;
                     }
-                    tile = ConfigUtils.config.Tiles.Find(t => t.Coordinate.X == args.Player.TempPoints[0].X && t.Coordinate.Y == args.Player.TempPoints[0].Y);
+                    tile = ConfigUtils.config.Tiles.Find(t => t.ID == plr.GetData<int>("tilecommands"));
                     if (tile == null)
                     {
-                        args.Player.SendErrorMessage("方块不存在");
+                        args.Player.SendErrorMessage("指令方块不存在");
                         return;
                     }
                     else {
                         tile.Permission = args.Parameters[1];
                         args.Player.SendSuccessMessage("成功添加权限");
-                        args.Player.TempPoints[0] = Point.Zero;
                         ConfigUtils.UpdateConfig();
                     }
                     break;
@@ -171,20 +167,14 @@ namespace TileCommands
                         args.Player.SendErrorMessage("正确用法 /tc addcmd [权限]");
                         return;
                     }
-                    if (args.Player.TempPoints[0] == Point.Zero)
+                    tile = ConfigUtils.config.Tiles.Find(t => t.ID == plr.GetData<int>("tilecommands"));
+                    if (tile == null)
                     {
-                        args.Player.SendErrorMessage("未选取点");
-                        return;
-                    }
-                    tile = ConfigUtils.config.Tiles.Find(t => t.Coordinate.X == args.Player.TempPoints[0].X && t.Coordinate.Y == args.Player.TempPoints[0].Y);
-                    if (tile==null)
-                    {
-                        args.Player.SendErrorMessage("该方块不是一个指令方块");
+                        args.Player.SendErrorMessage("指令方块不存在");
                         return;
                     }
                     tile.TCommands.Add(Utils.GetValidCmdText(args.Parameters,1));
                     args.Player.SendSuccessMessage("成功添加指令");
-                    args.Player.TempPoints[0] = Point.Zero;
                     ConfigUtils.UpdateConfig();
                     break;
                 case "debug":
@@ -193,6 +183,7 @@ namespace TileCommands
                 case "cancel":
                     args.Player.SendSuccessMessage("成功取消选择");
                     args.Player.TempPoints[0] = Point.Zero;
+                    plr.SetData("tilecommands", 0);
                     break;
                 case "reload":
                     ConfigUtils.LoadConfig();
@@ -204,25 +195,100 @@ namespace TileCommands
                         args.Player.SendErrorMessage("正确用法 /tc addtext [文本]");
                         return;
                     }
-                    if (args.Player.TempPoints[0] == Point.Zero)
-                    {
-                        args.Player.SendErrorMessage("未选取点");
-                        return;
-                    }
-                    tile = ConfigUtils.config.Tiles.Find(t => t.Coordinate.X == args.Player.TempPoints[0].X && t.Coordinate.Y == args.Player.TempPoints[0].Y);
+                    tile = ConfigUtils.config.Tiles.Find(t=>t.ID==plr.GetData<int>("tilecommands"));
                     if (tile == null)
                     {
-                        args.Player.SendErrorMessage("该方块不是一个指令方块");
+                        args.Player.SendErrorMessage("指令方块不存在");
                         return;
                     }
                     tile.Text.Add(args.Parameters[1]);
                     args.Player.SendSuccessMessage("成功添加提示文本");
-                    args.Player.TempPoints[0] = Point.Zero;
                     ConfigUtils.UpdateConfig();
                     break;
                 default:
                     args.Player.SendInfoMessage("输入/tc help 查看指令帮助");
                     break;
+                case "sc":
+                    if (args.Parameters.Count!=2)
+                    {
+                        args.Player.SendInfoMessage("正确指令/tc sc [方块ID] 进行选中方块");
+                        return;
+                    }
+                    if (int.TryParse(args.Parameters[1],out value))
+                    {
+                        tile = ConfigUtils.config.Tiles.Find(t=>t.ID==value);
+                        if (tile!=null)
+                        {
+                            plr.SetData("tilecommands", value);
+                            plr.SendInfoMessage($"成功选中 指令方块(ID:{value})");
+                        }
+                        else
+                        {
+                            plr.SendInfoMessage("指令方块不存在");
+                        }
+                    }
+                    else
+                    {
+                        args.Player.SendInfoMessage("请输入数字");
+                    }
+                    break;
+                case "settime":
+                    if (args.Parameters.Count != 3)
+                    {
+                        args.Player.SendInfoMessage("正确指令/tc settime [方块ID] [秒数]");
+                        return;
+                    }
+                    if (int.TryParse(args.Parameters[1], out id)&&int.TryParse(args.Parameters[2],out value))
+                    {
+                        tile = ConfigUtils.config.Tiles.Find(t => t.ID == id);
+                        if (tile != null)
+                        {
+                            tile.Seconds = value;
+                            plr.SendInfoMessage($"成功设置指令方块(id:{tile.ID})的冷却时间为 {value} 秒");
+                            ConfigUtils.UpdateConfig();
+                        }
+                        else
+                        {
+                            plr.SendInfoMessage("指令方块不存在");
+                        }
+                    }
+                    else
+                    {
+                        args.Player.SendInfoMessage("请输入数字");
+                    }
+                    break;
+                case "list":
+                    helpText.AppendLine("指令方块列表——>");
+                    foreach (var temp in ConfigUtils.config.Tiles)
+                    {
+                        helpText.AppendLine($"[{temp.ID}] ({temp.Coordinate.X},{temp.Coordinate.Y})");
+                    }
+                    plr.SendInfoMessage(helpText.ToString());
+                    break;
+                case "tp":
+                    if (args.Parameters.Count != 2)
+                    {
+                        args.Player.SendInfoMessage("正确指令/tc tp [方块ID]");
+                        return;
+                    }
+                    if (int.TryParse(args.Parameters[1], out id))
+                    {
+                        tile = ConfigUtils.config.Tiles.Find(t => t.ID == id);
+                        if (tile != null)
+                        {
+                            plr.Teleport(tile.Coordinate.X*16f,tile.Coordinate.Y*16f);
+                        }
+                        else
+                        {
+                            plr.SendInfoMessage("指令方块不存在");
+                        }
+                    }
+                    else
+                    {
+                        args.Player.SendInfoMessage("请输入数字");
+                    }
+                    break;
+                
             }
         }
 

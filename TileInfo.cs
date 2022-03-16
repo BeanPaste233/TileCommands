@@ -52,6 +52,7 @@ namespace TileCommands
                 Commands.HandleCommand(plr,handledCmd);
             }
             plr.tempGroup = null;
+            Locked = true;
             return true;
         }
         public bool CheckPermission(TSPlayer plr) 
@@ -70,23 +71,22 @@ namespace TileCommands
         }
         public void Update(EventArgs args) 
         {
-            if (tick!=60)
+            if (Locked)
             {
-                tick++;
-            }
-            else
-            {
-                seconds++;
-                tick = 0;
-            }
-            if (seconds>=Seconds)
-            {
-                Locked = false;
-                seconds = 0;
-            }
-            else
-            {
-                Locked = true;
+                if (tick != 60)
+                {
+                    tick++;
+                }
+                else
+                {
+                    seconds++;
+                    tick = 0;
+                }
+                if (seconds >= Seconds)
+                {
+                    Locked = false;
+                    seconds = 0;
+                }
             }
         }
     }

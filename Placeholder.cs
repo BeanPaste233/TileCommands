@@ -15,9 +15,9 @@ namespace TileCommands
         public Placeholder() { }
         public string Replace(string text,TSPlayer plr) 
         {
-            text.Replace(player,plr.Name);
-            text.Replace(itemInHeld,plr.TPlayer.HeldItem.netID.ToString());
-            text.Replace(group,plr.Group.Name);
+            text =text.Replace(player,plr.Name);
+            text = text.Replace(itemInHeld,plr.TPlayer.HeldItem.netID.ToString());
+            text = text.Replace(group,plr.Group.Name);
             return text;
         }
     }
