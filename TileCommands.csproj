@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>TileCommands</RootNamespace>
     <AssemblyName>TileCommands</AssemblyName>
-    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
     <TargetFrameworkProfile />
@@ -40,6 +40,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>C:\Users\BeanPaste\Desktop\泰拉瑞亚相关\Experimental.TShock\OTAPI.dll</HintPath>
     </Reference>
+    <Reference Include="PlaceholderAPI">
+      <HintPath>C:\Users\BeanPaste\Desktop\PlaceholderAPI.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -60,7 +63,6 @@
   <ItemGroup>
     <Compile Include="ConfigUtils.cs" />
     <Compile Include="MainPlugin.cs" />
-    <Compile Include="Placeholder.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TileInfo.cs" />
     <Compile Include="Utils.cs" />

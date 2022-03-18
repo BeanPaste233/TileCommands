@@ -12,7 +12,6 @@ namespace TileCommands
 {
     public static class Utils
     {
-        public static Placeholder placeholder = new Placeholder();
         //to do
         public static Point GetPlayerFeetPoint(int tileX,int tileY) {
             return new Point(tileX,tileY+3);
