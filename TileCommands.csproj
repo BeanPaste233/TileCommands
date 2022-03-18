@@ -40,7 +40,8 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>C:\Users\BeanPaste\Desktop\泰拉瑞亚相关\Experimental.TShock\OTAPI.dll</HintPath>
     </Reference>
-    <Reference Include="PlaceholderAPI">
+    <Reference Include="PlaceholderAPI, Version=1.0.0.2, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>C:\Users\BeanPaste\Desktop\PlaceholderAPI.dll</HintPath>
     </Reference>
     <Reference Include="System" />
